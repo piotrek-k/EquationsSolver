@@ -1,3 +1,10 @@
+﻿# EquationsSolver
+
+
+VS
+
+
+
 EquationsSolver
 ===============
 

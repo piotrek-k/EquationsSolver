@@ -1,0 +1,10 @@
+{
+  "name": "EquationsSolver",
+  "version": "0.0.0",
+  "description": "EquationsSolver",
+  "main": "app.js",
+  "author": {
+    "name": "piotr_000",
+    "email": ""
+  }
+}

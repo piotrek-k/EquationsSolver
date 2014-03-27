@@ -1,11 +1,4 @@
-﻿# EquationsSolver
-
-
-VS
-
-
-
-EquationsSolver
+﻿EquationsSolver
 ===============
 
 Simple script that solves mathematical equations

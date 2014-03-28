@@ -5,16 +5,29 @@ function Number(number){
     this.solve = function(){
         return this;
     }
+    
+    this.translate = function(){
+        //if(this.val > 0){
+        //    return "+" + this.val;
+        //} else {
+        //    return "" + this.val;
+        //}
+        return "" + this.val;
+    }
 
     return this;
 }
 
-function Unknown(id){
-    this.id = id;
+function Unknown(letter){
+    this.id = letter;
     this.val = "unknown";
 
     this.solve = function(){
         return this;
+    }
+
+    this.translate = function(){
+        return "" + this.id;
     }
 
     return this;
@@ -26,15 +39,38 @@ function Monomial(array){ //jednomian
 
     this.solve = function(){
         this.result = 1;
+        this.nonNumbers = [];
         for(var v in this.val){
-            if(this.val[v].type === "number"){
+            if(this.val[v] instanceof Number){
                 this.result *= this.val[v].val;
             } else {
-                return this;
+                this.val[v] = this.val[v].solve();
+                this.nonNumbers.push(v);
             }
         }
 
+        if(this.nonNumbers.length > 0){
+            this.components = [];
+            this.components.push(new Number(this.result));
+            for(var a in this.nonNumbers){
+                this.components.push(this.val[this.nonNumbers[a]]);
+            }
+            return new Monomial(this.components);
+        }
+
         return new Number(this.result);
+    }
+
+    this.translate = function(){
+        this.result = "";
+        for(var a=0;a<this.val.length;a++){
+            this.result += this.val[a].translate();
+            if(a<this.val.length-1){
+                this.result += "*";
+            }
+        }
+
+        return this.result;
     }
 
     return this;
@@ -69,13 +105,27 @@ function Brackets(array){
         this.result = [];
         this.sumOfNumbers = 0;
         for(var v in this.val){
-            if(this.val[v].type === "number"){
+            if(this.val[v] instanceof Number){
                 this.sumOfNumbers += this.val[v].val;
             } else {
                 this.result.push(this.val[v]);
             }
         }
         this.result.push(new Number(this.sumOfNumbers));
+
+        return new Brackets(this.result);
+    }
+
+    this.translate = function(){
+        this.result = "(";
+        for(var a=0;a<this.val.length;a++){
+            this.result += this.val[a].translate();
+            if(a<this.val.length-1){
+                this.result += "+";
+            }
+        }
+
+        return this.result+")";
     }
 
     return this;
@@ -101,34 +151,6 @@ function Brackets(array){
     ]
  */
 
-this.pretty = function(expression){
-    this.result = "";
-
-    this.getAllValues = function(arr){
-        this.res = "";
-
-        for(this.a in arr){
-            if(arr[this.a] instanceof Number){
-                this.res += (arr[this.a].val > 0) ? "+" + arr[this.a].val : arr[this.a].val;
-            } else if(arr[this.a] instanceof Monomial){
-                this.res += "unknown";
-            } else if(arr[this.a] instanceof Unknown){
-                this.res += "unknown";
-            } else if(arr[this.a] instanceof Brackets){
-                this.res += "(" + this.getAllValues(arr[this.a].val) + ")";
-            } else {
-                console.log("");
-            }
-        }
-
-        return this.res;
-    }
-
-    this.result += this.getAllValues(expression.val);
-
-    return this.result;
-};
-
 var equation = new Brackets([ 
         new Monomial( [
             new Number(2),
@@ -138,13 +160,15 @@ var equation = new Brackets([
             new Number(-1),
             new Brackets( [
                 new Number(1),
-                new Unknown(1)
+                new Number(3),
+                new Number(4),
+                new Unknown("x")
             ] ) 
         ] ) 
     ]);
 
-console.log("1: " + this.pretty(equation));
+console.log("1: " + equation.translate());
 equation.solve();
-console.log("2: " + this.pretty(equation));
+console.log("2: " + equation.translate());
 
 console.log("end");
